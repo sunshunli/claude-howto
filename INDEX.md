@@ -13,7 +13,7 @@ This document provides a complete index of all example files organized by featur
 - **Categories**: 10 feature categories
 - **Plugins**: 3 complete plugins
 - **Skills**: 6 complete skills
-- **Hooks**: 8 example hooks
+- **Hooks**: 11 example hooks
 - **Ready to Use**: All examples
 
 ---
@@ -60,13 +60,13 @@ Persistent context and project standards.
 
 ---
 
-## 03. Skills (28 files)
+## 03. Skills (23 files)
 
 Auto-invoked capabilities with scripts and templates.
 
 ### Code Review Skill (5 files)
 ```
-code-review/
+code-review-specialist/
 ├── SKILL.md                          # Skill definition
 ├── scripts/
 │   ├── analyze-metrics.py            # Code metrics analyzer
@@ -158,20 +158,21 @@ blog-draft/
 
 ---
 
-## 04. Subagents (9 files)
+## 04. Subagents (10 files)
 
 Specialized AI assistants with custom capabilities.
 
 | File | Description | Tools | Use Case |
 |------|-------------|-------|----------|
-| `code-reviewer.md` | Code quality analysis | read, grep, diff, lint_runner | Comprehensive reviews |
-| `test-engineer.md` | Test coverage analysis | read, write, bash, grep | Test automation |
-| `documentation-writer.md` | Documentation creation | read, write, grep | Doc generation |
-| `secure-reviewer.md` | Security review (read-only) | read, grep | Security audits |
-| `implementation-agent.md` | Full implementation | read, write, bash, grep, edit, glob | Feature development |
-| `debugger.md` | Debugging specialist | read, bash, grep | Bug investigation |
-| `data-scientist.md` | Data analysis specialist | read, write, bash | Data workflows |
-| `clean-code-reviewer.md` | Clean code standards | read, grep | Code quality |
+| `code-reviewer.md` | Code quality analysis | Read, Grep, Glob, Bash | Comprehensive reviews |
+| `test-engineer.md` | Test coverage analysis | Read, Write, Bash, Grep | Test automation |
+| `documentation-writer.md` | Documentation creation | Read, Write, Grep | Doc generation |
+| `secure-reviewer.md` | Security review (read-only) | Read, Grep | Security audits |
+| `implementation-agent.md` | Full implementation | Read, Write, Edit, Bash, Grep, Glob | Feature development |
+| `debugger.md` | Debugging specialist | Read, Edit, Bash, Grep, Glob | Bug investigation |
+| `data-scientist.md` | Data analysis specialist | Bash, Read, Write | Data workflows |
+| `clean-code-reviewer.md` | Clean code standards | Read, Grep, Glob, Bash | Code quality |
+| `performance-optimizer.md` | Performance bottleneck analysis | Read, Edit, Bash, Grep, Glob | Optimization work |
 | `README.md` | Documentation | - | Setup and usage guide |
 
 **Installation Path**: `.claude/agents/`
@@ -198,35 +199,40 @@ External tool and API integrations.
 
 ---
 
-## 06. Hooks (9 files)
+## 06. Hooks (12 files)
 
 Event-driven automation scripts that execute automatically.
 
 | File | Description | Event | Use Case |
 |------|-------------|-------|----------|
-| `format-code.sh` | Auto-format code | PreToolUse:Write | Code formatting |
-| `pre-commit.sh` | Run tests before commit | PreToolUse:Bash | Test automation |
-| `security-scan.sh` | Security scanning | PostToolUse:Write | Security checks |
-| `log-bash.sh` | Log bash commands | PostToolUse:Bash | Command logging |
-| `validate-prompt.sh` | Validate prompts | PreToolUse | Input validation |
-| `notify-team.sh` | Send notifications | Notification | Team notifications |
-| `context-tracker.py` | Track context window usage | PostToolUse | Context monitoring |
-| `context-tracker-tiktoken.py` | Token-based context tracking | PostToolUse | Precise token counting |
+| `format-code.sh` | Auto-format code | PostToolUse (matcher: Write) | Code formatting |
+| `pre-commit.sh` | Run tests before commit | PreToolUse (matcher: Bash) | Test automation |
+| `pre-tool-check.sh` | Validate and audit commands before they run | PreToolUse (matcher: Bash) | Guardrails, audit log |
+| `security-scan.sh` | Security scanning | PostToolUse (matcher: Write) | Security checks |
+| `dependency-check.sh` | Scan dependency manifests for vulnerabilities | PostToolUse (matcher: Write) | Supply-chain checks |
+| `log-bash.sh` | Log bash commands | PostToolUse (matcher: Bash) | Command logging |
+| `notify-team.sh` | Send notifications | PostToolUse (matcher: Bash) | Team notifications |
+| `validate-prompt.sh` | Validate prompts | UserPromptSubmit | Input validation |
+| `session-end.sh` | Capture progress when a session ends | SessionEnd | Progress tracking |
+| `context-tracker.py` | Track context window usage | UserPromptSubmit, Stop | Context monitoring |
+| `context-tracker-tiktoken.py` | Token-based context tracking | UserPromptSubmit, Stop | Precise token counting |
 | `README.md` | Documentation | - | Setup and usage guide |
 
 **Installation Path**: Configure in `~/.claude/settings.json`
 
 **Usage**: Configured in settings, executed automatically
 
-**Hook Types** (4 types, 25 events):
-- Tool Hooks: PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest
-- Session Hooks: SessionStart, SessionEnd, Stop, StopFailure, SubagentStart, SubagentStop
-- Task Hooks: UserPromptSubmit, TaskCompleted, TaskCreated, TeammateIdle
-- Lifecycle Hooks: ConfigChange, CwdChanged, FileChanged, PreCompact, PostCompact, WorktreeCreate, WorktreeRemove, Notification, InstructionsLoaded, Elicitation, ElicitationResult
+**Hook Types** (5): `command`, `http`, `prompt`, `mcp_tool`, `agent` — how a hook runs.
+
+**Hook Events** (33, in 4 categories) — when it runs:
+- Tool Hooks: PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, PermissionRequest, PermissionDenied
+- Session Hooks: SessionStart, Setup, SessionEnd, Stop, StopFailure, SubagentStart, SubagentStop
+- Task Hooks: UserPromptSubmit, UserPromptExpansion, MessageDisplay, TaskCompleted, TaskCreated, TeammateIdle (TaskCompleted/TaskCreated only fire when the todo tools are enabled — off by default on Opus 4.8, Sonnet 5, Fable 5, Mythos 5 and newer)
+- Lifecycle Hooks: ConfigChange, CwdChanged, DirectoryAdded, FileChanged, PreCompact, PostCompact, PreModelSwitch, PostModelSwitch, WorktreeCreate, WorktreeRemove, Notification, InstructionsLoaded, Elicitation, ElicitationResult
 
 ---
 
-## 07. Plugins (3 complete plugins, 40 files)
+## 07. Plugins (3 complete plugins, 39 files)
 
 Bundled collections of features.
 
@@ -358,7 +364,7 @@ Save conversation state and explore alternative approaches.
 
 ---
 
-## 09. Advanced Features (3 files)
+## 09. Advanced Features (4 files)
 
 Advanced capabilities for complex workflows.
 
@@ -367,9 +373,12 @@ Advanced capabilities for complex workflows.
 | `README.md` | Complete guide | All advanced features documentation |
 | `config-examples.json` | Configuration examples | 10+ use-case-specific configurations |
 | `planning-mode-examples.md` | Planning examples | REST API, database migration, refactoring |
+| `setup-auto-mode-permissions.py` | Seed `permissions.allow` for auto mode | Idempotent, `--dry-run` and opt-in flags |
+| Dynamic Workflows | Deterministic multi-agent orchestration via `/workflows` (v2.1.154) | Comprehensive audits, migrations, scale-out |
 | Scheduled Tasks | Recurring tasks with `/loop` and cron tools | Automated recurring workflows |
 | Chrome Integration | Browser automation via headless Chromium | Web testing and scraping |
-| Remote Control (expanded) | Connection methods, security, comparison table | Remote session management |
+| Remote Control (expanded) | Connection methods, security, comparison table, device cards | Remote session management (no longer a research preview) |
+| Cross-Session Messaging | `SendMessage` / `ListAgents`, including `notify_when_idle` (v2.1.236) | Coordinating sessions on the same machine |
 | Keyboard Customization | Custom keybindings, chord support, contexts | Personalized shortcuts |
 | Desktop App (expanded) | Connectors, launch.json, enterprise features | Desktop integration |
 | | | |
@@ -391,12 +400,18 @@ Advanced capabilities for complex workflows.
 - Parallel development workflows
 - Task management and monitoring
 
+### Dynamic Workflows (v2.1.154)
+- Deterministic orchestration of tens-to-hundreds of background subagents
+- Fan-out / pipeline / parallel stages for comprehensive coverage
+- View runs with `/workflows`; `ultracode` `/effort` turns it on for a session
+- Default size guideline is medium (aim for fewer than 15 agents) as of v2.1.219 — change it with **Dynamic workflow size** in `/config`
+
 ### Permission Modes
-- **default**: Ask for approval on risky actions
+- **manual**: Ask for approval on risky actions (renamed from `default` in v2.1.200; `default` still accepted)
 - **acceptEdits**: Auto-accept file edits, ask for others
 - **plan**: Read-only analysis, no modifications
-- **auto**: Automatically approve safe actions, prompt for risky ones
-- **dontAsk**: Accept all actions except risky ones
+- **auto**: Everything, with background safety checks — a classifier reviews commands and protected-directory writes (configured via the `autoMode` settings object)
+- **dontAsk**: Only pre-approved tools — auto-denies every call that would otherwise prompt. Claude runs only `permissions.allow` matches, read-only Bash commands, and calls approved by a `PreToolUse` hook
 - **bypassPermissions**: Accept all (requires `--dangerously-skip-permissions`)
 
 ### Headless Mode (`claude -p`)
@@ -434,6 +449,12 @@ Advanced capabilities for complex workflows.
 - Connection methods and protocols
 - Security considerations and best practices
 - Comparison table of remote access options
+- Out of research preview — a machine running `claude remote-control` appears as a device card in the Claude app's Code tab
+
+### Cross-Session Messaging
+- `SendMessage` between sessions on the same machine
+- `notify_when_idle` — one opt-in notice when the other session next goes idle (v2.1.236)
+- `ListAgents` reports the session's own name and lists live teammates (v2.1.239)
 
 ### Keyboard Customization
 - Custom keybindings configuration
@@ -459,7 +480,7 @@ Command-line interface usage patterns and reference.
 - `claude` - Start interactive session
 - `claude -p "prompt"` - Headless/non-interactive mode
 - `claude web` - Launch web session
-- `claude --model` - Select model (Sonnet 4.6, Opus 4.6)
+- `claude --model` - Select model (Opus 5, Sonnet 5, Sonnet 4.6, Opus 4.8, Haiku 4.5)
 - `claude --permission-mode` - Set permission mode
 - `claude --remote` - Enable remote control via WebSocket
 
@@ -515,7 +536,7 @@ claude-howto/
 │   └── README.md
 │
 ├── 03-skills/                                   # Skills
-│   ├── code-review/
+│   ├── code-review-specialist/
 │   │   ├── SKILL.md
 │   │   ├── scripts/
 │   │   │   ├── analyze-metrics.py
@@ -666,7 +687,7 @@ cp 01-slash-commands/optimize.md .claude/commands/
 cp 04-subagents/code-reviewer.md .claude/agents/
 
 # Install skill
-cp -r 03-skills/code-review ~/.claude/skills/
+cp -r 03-skills/code-review-specialist ~/.claude/skills/
 
 # Or install complete plugin
 /plugin install pr-review
@@ -761,13 +782,13 @@ Run tests in background
 |----------|----------|--------|-----|-------|---------|-----------|------|--------|-------|
 | **01 Slash Commands** | 8 | - | - | - | - | - | 1 | 1 | **10** |
 | **02 Memory** | - | - | - | - | - | 3 | 1 | 2 | **6** |
-| **03 Skills** | - | - | - | - | 5 | 9 | 1 | - | **28** |
-| **04 Subagents** | - | 8 | - | - | - | - | 1 | - | **9** |
+| **03 Skills** | - | - | - | - | 5 | 7 | 11 | - | **23** |
+| **04 Subagents** | - | 9 | - | - | - | - | 1 | - | **10** |
 | **05 MCP** | - | - | 4 | - | - | - | 1 | - | **5** |
-| **06 Hooks** | - | - | - | 8 | - | - | 1 | - | **9** |
-| **07 Plugins** | 11 | 9 | 3 | 3 | 3 | 3 | 4 | - | **40** |
+| **06 Hooks** | - | - | - | 11 | - | - | 1 | - | **12** |
+| **07 Plugins** | 11 | 9 | 3 | 3 | 3 | 3 | 7 | - | **39** |
 | **08 Checkpoints** | - | - | - | - | - | - | 1 | 1 | **2** |
-| **09 Advanced** | - | - | - | - | - | - | 1 | 2 | **3** |
+| **09 Advanced** | - | - | - | - | 1 | 1 | 2 | - | **4** |
 | **10 CLI** | - | - | - | - | - | - | 1 | - | **1** |
 
 ---
@@ -808,12 +829,12 @@ Run tests in background
 ### Performance
 - `01-slash-commands/optimize.md` - Performance analysis
 - `04-subagents/code-reviewer.md` - Performance review
-- `03-skills/code-review/` - Performance metrics
+- `03-skills/code-review-specialist/` - Performance metrics
 - `07-plugins/pr-review/agents/performance-analyzer.md` - Performance specialist
 
 ### Security
 - `04-subagents/secure-reviewer.md` - Security review
-- `03-skills/code-review/` - Security analysis
+- `03-skills/code-review-specialist/` - Security analysis
 - `07-plugins/pr-review/` - Security checks
 
 ### Testing
@@ -874,9 +895,20 @@ Want to add more examples? Follow the structure:
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: August 25, 2026
+**Claude Code Version**: 2.1.245
+**Sources**:
+- https://code.claude.com/docs/en/overview
+- https://code.claude.com/docs/en/hooks
+- https://code.claude.com/docs/en/commands
+- https://code.claude.com/docs/en/permission-modes
+- https://github.com/anthropics/claude-code/releases/tag/v2.1.153
+- https://github.com/anthropics/claude-code/releases/tag/v2.1.154
+- https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
+- https://code.claude.com/docs/en/model-config
+**Compatible Models**: Claude Fable 5, Claude Opus 5, Claude Sonnet 5, Claude Sonnet 4.6, Claude Opus 4.8, Claude Haiku 4.5
 **Total Examples**: 100+ files
 **Categories**: 10 features
-**Hooks**: 8 automation scripts
+**Hooks**: 11 automation scripts
 **Configuration Examples**: 10+ scenarios
 **Ready to Use**: All examples

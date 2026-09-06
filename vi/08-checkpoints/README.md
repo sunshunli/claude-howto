@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="../resources/logos/claude-howto-logo.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../resources/logos/claude-howto-logo-dark.svg">
+  <img alt="Claude How To" src="../../resources/logos/claude-howto-logo.svg">
 </picture>
 
 # Checkpoints và Rewind / Checkpoints and Rewind
@@ -207,15 +207,21 @@ Vì checkpoints được tạo tự động, bạn có thể tập trung vào c�
 
 ## Cấu Hình / Configuration
 
-Bạn có thể bật/tắt checkpoints tự động trong settings của bạn:
+Hai setting chi phối hành vi checkpoint — có chụp snapshot hay không, và giữ chúng bao lâu:
 
 ```json
 {
-  "autoCheckpoint": true
+  "fileCheckpointingEnabled": true,
+  "cleanupPeriodDays": 30
 }
 ```
 
-- `autoCheckpoint`: Bật hoặc tắt tạo checkpoint tự động trên mọi prompt người dùng (mặc định: `true`)
+| Setting | Mặc Định | Tác Dụng |
+|---------|---------|--------|
+| `fileCheckpointingEnabled` | `true` | Chụp snapshot file trước mỗi lần chỉnh sửa để `/rewind` có thể khôi phục. Yêu cầu v2.1.119+. Hiển thị trong `/config` dưới tên **Rewind code (checkpoints)**. Biến môi trường tương đương: `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING` |
+| `cleanupPeriodDays` | `30` | Số ngày giữ lịch sử phiên và checkpoints |
+
+Claude Code giữ snapshot cho **100 checkpoint gần nhất**; các checkpoint cũ hơn bị loại bỏ ngay cả khi còn trong thời hạn lưu giữ.
 
 ## Hạn Chế / Limitations
 
@@ -233,7 +239,7 @@ Checkpoints có các hạn chế sau:
 
 **Giải Pháp**:
 - Kiểm tra nếu checkpoints đã bị xóa
-- Xác minh rằng `autoCheckpoint` được bật trong settings của bạn
+- Xác minh rằng `fileCheckpointingEnabled` được bật trong settings của bạn
 - Kiểm tra dung lượng đĩa
 
 ### Rewind Thất Bại / Rewind Failed
@@ -297,3 +303,9 @@ Checkpoints cho phép bạn quay lại — nhưng làm thế nào bạn biết *
 
 - [Tài Liệu Checkpointing Chính Thức](https://code.claude.com/docs/en/checkpointing)
 - [Hướng Dẫn Tính Năng Nâng Cao](../09-advanced-features/) - Extended thinking và các khả năng khác
+
+---
+
+**Cập Nhật Lần Cuối**: Tháng 4 năm 2026
+**Phiên Bản Claude Code**: 2.1+
+**Các Mô Hình Tương Thích**: Claude Sonnet 4.6, Claude Opus 4.6, Claude Haiku 4.5

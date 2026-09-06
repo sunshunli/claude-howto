@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="../resources/logos/claude-howto-logo.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../resources/logos/claude-howto-logo-dark.svg">
+  <img alt="Claude How To" src="../../resources/logos/claude-howto-logo.svg">
 </picture>
 
 # Hướng Dẫn Bộ Nhớ
@@ -49,10 +49,10 @@ Lệnh `/init` là cách nhanh nhất để thiết lập bộ nhớ dự án tr
 - Thiết lập nền tảng cho tính liên tục của bối cảnh qua các phiên
 - Cung cấp cấu trúc mẫu để ghiêu chuẩn dự án của bạn
 
-**Chế độ tương tác nâng cao:** Đặt `CLAUDE_CODE_NEW_INIT=true` để bật quy trình tương tác đa giai đoạn hướng dẫn bạn qua việc thiết lập dự án từng bước:
+**Chế độ tương tác nâng cao:** Đặt `CLAUDE_CODE_NEW_INIT=1` để bật quy trình tương tác đa giai đoạn hướng dẫn bạn qua việc thiết lập dự án từng bước:
 
 ```bash
-CLAUDE_CODE_NEW_INIT=true claude
+CLAUDE_CODE_NEW_INIT=1 claude
 /init
 ```
 
@@ -310,9 +310,9 @@ Các cài đặt Claude Code (bao gồm `autoMemoryDirectory`, `claudeMdExcludes
 |-------|----------|-------|
 | 1 (Cao nhất) | Managed policy (cấp hệ thống) | Thực thi toàn tổ chức |
 | 2 | `managed-settings.d/` (v2.1.83+) | Các drop-in chính sách mô-đun, được hợp nhất theo bảng chữ cái |
-| 3 | `~/.claude/settings.json` | Tùy thích người dùng |
+| 3 | `.claude/settings.local.json` | Ghi đè cục bộ (bị git bỏ qua) |
 | 4 | `.claude/settings.json` | Cấp dự án (được commit vào git) |
-| 5 (Thấp nhất) | `.claude/settings.local.json` | Ghi đè cục bộ (bị git bỏ qua) |
+| 5 (Thấp nhất) | `~/.claude/settings.json` | Tùy thích người dùng |
 
 **Cấu hình cụ thể theo nền tảng (v2.1.51+):**
 
@@ -644,7 +644,9 @@ Claude sẽ tải CLAUDE.md từ thư mục bổ sung được chỉ định cù
 ```markdown
 # API Module Standards
 
-This file overrides root CLAUDE.md for everything in /src/api/
+This file supplements root CLAUDE.md for everything in /src/api/. Memory files are
+concatenated, not overridden — the root CLAUDE.md still applies, and Claude Code
+loads this file on demand when it reads files in this subtree.
 
 ## API-Specific Standards
 
@@ -904,7 +906,7 @@ graph LR
   - **Directory memory**: Các quy tắc và ghi đè cụ thể theo module
 
 - **Tận dụng imports**: Sử dụng cú pháp `@path/to/file` để tham khảo tài liệu hiện có
-  - Hỗ trợ lên đến 5 cấp lồng ghép đệ quy
+  - Hỗ trợ tối đa 4 chặng đệ quy (recursive hops)
   - Tránh nhân đôi qua các file bộ nhớ
   - Ví dụ: `See @README.md for project overview`
 
@@ -932,7 +934,7 @@ graph LR
 
 - **Đừng quên cập nhật**: Bộ nhớ cũ có thể gây nhầm lẫn và thực hành lỗi thời
 
-- **Đừng vượt quá giới hạn lồng**: Bộ nhớ import hỗ trợ lên đến 5 cấp lồng
+- **Đừng vượt quá giới hạn lồng**: Bộ nhớ import hỗ trợ tối đa 4 chặng đệ quy
 
 ### Mẹo Quản Lý Bộ Nhớ
 
@@ -1078,7 +1080,9 @@ Claude sẽ nhắc bạn chọn file bộ nhớ nào để cập nhật.
    cat > /path/to/directory/CLAUDE.md << 'EOF'
    # [Directory Name] Standards
 
-   This file overrides root CLAUDE.md for this directory.
+   This file supplements root CLAUDE.md for this directory. Memory files are
+   concatenated, not overridden — Claude Code loads this file on demand when it
+   reads files in this directory.
 
    ## [Specific Standards]
    EOF
@@ -1151,3 +1155,11 @@ Claude sẽ nhắc bạn chọn file bộ nhớ nào để cập nhật.
 ### Các Tính Năng Claude Liên Quan
 - [Bộ Nhớ Claude Web](https://claude.ai) - Tổng hợp tự động
 - [Tài Liệu Bộ Nhớ Chính Thức](https://code.claude.com/docs/en/memory) - Tài liệu Anthropic
+
+---
+
+**Cập Nhật Lần Cuối**: Ngày 25 tháng 8 năm 2026
+**Phiên Bản Claude Code**: 2.1.245
+**Nguồn**:
+- https://code.claude.com/docs/en/memory
+**Các Mô Hình Tương Thích**: Claude Sonnet 4.6, Claude Opus 4.6, Claude Haiku 4.5

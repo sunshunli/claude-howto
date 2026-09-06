@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../resources/logos/claude-howto-logo-dark.svg">
+  <img alt="Claude How To" src="../resources/logos/claude-howto-logo.svg">
 </picture>
 
 # Đóng Góp Cho Claude How To / Contributing to Claude How To
@@ -68,7 +68,7 @@ git checkout -b docs/improvement-area
 
 ### 3. Thiết Lập Môi Trường Của Bạn
 
-Pre-commit hooks chạy cùng các kiểm tra như CI cục bộ trước mỗi commit. Tất cả bốn kiểm tra phải pass trước khi PR được chấp nhận.
+Pre-commit hooks chạy cùng các kiểm tra như CI cục bộ trước mỗi commit. Tất cả năm kiểm tra phải pass trước khi PR được chấp nhận.
 
 **Dependencies được yêu cầu:**
 
@@ -97,3 +97,14 @@ pre-commit run --all-files
 ```
 
 Các hooks chạy trên mỗi commit là:
+- Kiểm tra markdown-lint
+- Kiểm tra cross-references
+- Kiểm tra mermaid-syntax
+- Kiểm tra link-check
+
+---
+
+Thank you for contributing! 🙏
+
+---
+**Cập Nhật Lần Cuối**: Tháng 4 năm 2026

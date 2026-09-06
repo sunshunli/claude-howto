@@ -35,6 +35,9 @@ SKIP_DOMAINS = {
     "wikipedia.org",
     # GitHub API requires auth — unauthenticated requests return 404 for protected endpoints
     "api.github.com",
+    # Claude Code native-binary download host — directory listing returns 404, artifacts are
+    # fetched programmatically by the installer via the full filename path
+    "downloads.claude.ai",
 }
 SKIP_DOMAIN_SUFFIXES = (".example.com", ".example.org", ".internal")
 # Placeholder/template URLs that are intentionally non-resolvable
@@ -50,7 +53,7 @@ URL_RE = re.compile(r"https?://[a-zA-Z0-9][a-zA-Z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+
 
 def is_skipped(url: str) -> bool:
     try:
-        domain = url.split("/")[2]
+        domain = url.split("/", 3)[2].split(":", 1)[0]
     except IndexError:
         return True  # malformed URL
     if any(skip == domain or domain.endswith("." + skip) for skip in SKIP_DOMAINS):
@@ -93,13 +96,24 @@ def main(strict: bool = False) -> int:
             # Strip trailing Markdown/punctuation characters the regex may over-capture
             # from link syntax like [text](https://url/) or **https://url)**
             clean_url = raw_url.rstrip(")>*_`':.,;").split("#")[0]
+            # Skip bare-hostname partials. URL_RE stops at backslashes, so a
+            # regex string inside a JSON config example like
+            # "footerLinksRegexes": ["https://jira\\.example\\.com/.*"] is
+            # captured as just "https://jira" — a hostname with no dot that is
+            # not a resolvable URL but a truncated pattern. Real public URLs
+            # have a dotted host; localhost-style single-label hosts are in
+            # SKIP_DOMAINS already, so dropping dotless hosts here loses no
+            # genuine link coverage.
+            host = clean_url.split("/", 3)[2] if "://" in clean_url else ""
+            if host and "." not in host.split(":", 1)[0]:
+                continue
             urls.setdefault(clean_url, []).append(str(file_path))
 
     if not urls:
         print("✅ No external URLs found")
         return 0
 
-    errors = []
+    errors: list[str] = []
     with ThreadPoolExecutor(max_workers=10) as pool:
         futures = {pool.submit(check_url, url): url for url in urls}
         for future in as_completed(futures):

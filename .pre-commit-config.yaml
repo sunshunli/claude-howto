@@ -7,8 +7,11 @@ default_language_version:
 
 repos:
   # Ruff - Fast Python linter and formatter
+  # Keep this in step with the `ruff` floor in scripts/requirements-dev.txt and
+  # the unpinned `uv pip install ruff` in the CI lint job. A stale pin here
+  # reformats files the newer ruff in CI then rejects, and vice versa.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.2
+    rev: v0.15.10
     hooks:
       - id: ruff
         name: ruff-lint
@@ -51,6 +54,18 @@ repos:
       - id: check-merge-conflict
         name: check-merge-conflict
 
+  # mypy - Type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        name: mypy-type-check
+        args: [--config-file, scripts/pyproject.toml]
+        files: ^scripts/
+        exclude: ^scripts/tests/
+        additional_dependencies:
+          - types-Markdown
+
   # Local doc quality hooks (mirrors CI checks — CI is a 2nd pass of these)
   - repo: local
     hooks:
@@ -85,12 +100,17 @@ repos:
         types: [markdown]
         verbose: true
 
-      - id: build-epub
-        name: build-epub
+      - id: markdown-rendering
+        name: markdown-rendering
         language: system
-        entry: uv run scripts/build_epub.py
+        entry: python scripts/check_markdown_rendering.py
         pass_filenames: false
-        files: ^(.*\.md|scripts/build_epub\.py)$
+        types: [markdown]
+
+      # The EPUB build is intentionally CI-only (see the `build-epub` job in
+      # .github/workflows/test.yml). It needs a local `mmdc` binary, which has
+      # no working arm64 build, so running it here made the gate impossible to
+      # satisfy on arm64 machines while `check_mermaid.py` skipped silently.
 
   # Vietnamese documentation checks
   - repo: local
@@ -126,9 +146,36 @@ repos:
         files: ^vi/.*\.md$
         verbose: true
 
-      - id: vietnamese-build-epub
-        name: vietnamese-build-epub
+  # Japanese documentation checks
+  - repo: local
+    hooks:
+      - id: japanese-markdown-lint
+        name: japanese-markdown-lint
+        language: node
+        entry: markdownlint
+        args: ['--ignore', 'node_modules', '--ignore', '.venv', '--config', '.markdownlint.json']
+        files: ^ja/.*\.md$
+        additional_dependencies: ['markdownlint-cli']
+
+      - id: japanese-cross-references
+        name: japanese-cross-references
         language: system
-        entry: uv run scripts/build_epub.py --lang vi
+        entry: python scripts/check_cross_references.py
         pass_filenames: false
-        files: ^(vi/.*\.md|scripts/build_epub\.py)$
+        files: ^ja/.*\.md$
+
+      - id: japanese-mermaid
+        name: japanese-mermaid-syntax
+        language: system
+        entry: python scripts/check_mermaid.py
+        pass_filenames: false
+        files: ^ja/.*\.md$
+        verbose: true
+
+      - id: japanese-link-check
+        name: japanese-link-check
+        language: system
+        entry: python scripts/check_links.py
+        pass_filenames: false
+        files: ^ja/.*\.md$
+        verbose: true
